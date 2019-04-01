@@ -15,7 +15,7 @@ def chunks(l, n):
         yield l[i:i + n]
 
 
-def interpolate(features, features_per_bag):
+def interpolate(features, features_per_bag, normalize=True):
     feature_size = np.array(features).shape[1]
     interpolated_features = np.zeros((features_per_bag, feature_size))
     interpolation_indicies = np.round(np.linspace(0, len(features) - 1, num=features_per_bag + 1))
@@ -29,12 +29,13 @@ def interpolate(features, features_per_bag):
         if start == end:
             temp_vect = features[start, :]
         else:
-            temp_vect = np.mean(features[start:end+1, :])
+            temp_vect = np.mean(features[start:end+1, :], axis=0)
 
-        temp_vect = temp_vect / np.linalg.norm(temp_vect)
+        if normalize:
+            temp_vect = temp_vect / np.linalg.norm(temp_vect)
 
-        if np.linalg.norm(temp_vect) == 0:
-            print("Error")
+            if np.linalg.norm(temp_vect) == 0:
+                print("Error")
 
         interpolated_features[count,:]=temp_vect
         count = count + 1
